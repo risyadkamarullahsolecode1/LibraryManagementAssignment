@@ -1,6 +1,8 @@
-﻿using LibraryManagementAssignment.Domain.Entities;
+﻿using LibraryManagementAssignment.Application.Interfaces;
+using LibraryManagementAssignment.Domain.Entities;
 using LibraryManagementAssignment.Domain.Helpers;
 using LibraryManagementAssignment.Domain.Interfaces;
+using LibraryManagementAssignment.Application.Mappers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagementAssignment.WebAPI.Controllers
@@ -10,23 +12,28 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
     public class BookController : ControllerBase
     {
         private readonly IBookRepository _bookRepository;
+        private readonly IBookServices _bookServices;
 
-        public BookController(IBookRepository bookRepository)
+        public BookController(IBookRepository bookRepository, IBookServices bookServices)
         {
             _bookRepository = bookRepository;
+            _bookServices = bookServices;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks([FromQuery]QueryObject query)
+        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {
-            var books = await _bookRepository.GetAllBooks(query);
+            var books = await _bookRepository.GetAllBooks();
             return Ok(books);
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
+        public async Task<ActionResult<Book>> GetBookById(int id)
         {
-            var book = _bookRepository.GetBookById(id);
-            if (book == null) return NotFound();
+            var book = await _bookRepository.GetBookById(id);
+            if (book == null)
+            {
+                return NotFound();
+            }
             return Ok(book);
         }
         [HttpPost]
@@ -54,6 +61,24 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
                 return NotFound();
             }
             return Ok("Buku telah dihapus");
+        }
+        [HttpGet("search-book")]
+        public async Task<ActionResult<IEnumerable<Book>>> SearchBookAsync([FromQuery]QueryObject query,[FromQuery] Pagination pagination)
+        {
+            var querybook = await _bookRepository.SearchBookAsync(query, pagination);
+            return Ok(querybook);
+        }
+        [HttpGet("search-book-language")]
+        public async Task <ActionResult<IEnumerable<Book>>> SearchBookLanguage([FromQuery]string language)
+        {
+            var booklanguage = await _bookServices.SearchBookLanguage(language);
+            return Ok(booklanguage);
+        }
+        [HttpGet("language-book")]
+        public async Task<ActionResult<IEnumerable<Book>>> SearchBookLanguageAsync([FromQuery]string language, [FromQuery]Pagination p)
+        {
+            var languagebook = await _bookRepository.SearchBookLanguage(language, p);
+            return Ok(languagebook);
         }
     }
 }

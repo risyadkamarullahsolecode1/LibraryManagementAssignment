@@ -19,6 +19,23 @@ namespace LibraryManagementAssignment.Application.Services
             _bookRepository = bookRepository;
         }
 
-        
+       // public async Task<IEnumerable<Book>> SearchBooksAsync(QueryObject query)
+       // {
+        //    //var books = await _bookRepository.GetAllBooks(query);
+
+            //query = query.
+
+            //var skipNumber = (query.PageNumber - 1) * query.PageSize;
+            //return books;
+       /// }
+       /// 
+       public async Task<IEnumerable<Book>> SearchBookLanguage(string language)
+        {
+            var languagebook = await _bookRepository.GetAllBooks();
+
+            return languagebook
+                .Where(b => b.Language == language)
+                .ToList();
+        }
     }
 }

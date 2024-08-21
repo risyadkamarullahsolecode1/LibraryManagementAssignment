@@ -10,6 +10,7 @@ namespace LibraryManagementAssignment.Application.Interfaces
 {
     public interface IBookServices
     {
-       // Task<IEnumerable<Book>> GetBooksAsync(QueryObject query);
+       //Task<IEnumerable<Book>> SearchBooksAsync(QueryObject query);
+       Task<IEnumerable<Book>> SearchBookLanguage(string language);
     }
 }

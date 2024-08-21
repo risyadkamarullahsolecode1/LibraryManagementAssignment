@@ -12,9 +12,6 @@ namespace LibraryManagementAssignment.Domain.Helpers
         public string? Category { get; set; }
         public string? Title { get; set; }
         public string? Author { get; set; }
-        public string? SortBy {  get; set; }
-        public bool IsDescending { get; set; }
-        public int PageNumber { get; set; } = 1;
-        public int PageSize { get; set; }
+        public string? QueryOperators { get; set; }
     }
 }
