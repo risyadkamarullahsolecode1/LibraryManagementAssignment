@@ -4,6 +4,7 @@ using LibraryManagementAssignment.Domain.Helpers;
 using LibraryManagementAssignment.Domain.Interfaces;
 using LibraryManagementAssignment.Application.Mappers;
 using Microsoft.AspNetCore.Mvc;
+using LibraryManagementAssignment.Application.Dto;
 
 namespace LibraryManagementAssignment.WebAPI.Controllers
 {
@@ -24,7 +25,8 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {
             var books = await _bookRepository.GetAllBooks();
-            return Ok(books);
+            var bookDto = books.Select(b => b.ToBookDto()).ToList();
+            return Ok(bookDto);
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<Book>> GetBookById(int id)
@@ -34,7 +36,8 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             {
                 return NotFound();
             }
-            return Ok(book);
+            var bookDto = book.ToBookDto();
+            return Ok(bookDto);
         }
         [HttpPost]
         public async Task<ActionResult<Book>> AddBook(Book book)
@@ -49,7 +52,8 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             if (id != book.Id) return BadRequest();
 
             var createdBook = await _bookRepository.UpdateBook(book);
-            return Ok(createdBook);
+            var bookDto = createdBook.ToBookDto();
+            return Ok(bookDto);
         }
 
         [HttpDelete("{id}")]
@@ -78,7 +82,8 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
         public async Task<ActionResult<IEnumerable<Book>>> SearchBookLanguageAsync([FromQuery]string language, [FromQuery]Pagination p)
         {
             var languagebook = await _bookRepository.SearchBookLanguage(language, p);
-            return Ok(languagebook);
+            var bookDto = languagebook.ToBookDto();
+            return Ok(bookDto);
         }
     }
 }

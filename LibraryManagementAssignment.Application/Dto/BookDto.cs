@@ -9,7 +9,6 @@ namespace LibraryManagementAssignment.Application.Dto
 {
     public class BookDto
     {
-        public int Id { get; set; }
         public string? Category { get; set; }
         public string? Title { get; set; }
         public string? ISBN { get; set; }
@@ -18,8 +17,5 @@ namespace LibraryManagementAssignment.Application.Dto
         public string? Description { get; set; }
         public string? Language { get; set; }
         public string? Location { get; set; }
-        public DateTime? PurchaseDate { get; set; }
-        public int? Price { get; set; }
-        public int? TotalBook { get; set; }
     }
 }

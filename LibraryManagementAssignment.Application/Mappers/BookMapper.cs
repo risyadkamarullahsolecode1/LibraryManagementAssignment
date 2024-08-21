@@ -14,7 +14,6 @@ namespace LibraryManagementAssignment.Application.Mappers
         {
             return new BookDto
             {
-                Id = book.Id,
                 Title = book.Title,
                 ISBN = book.ISBN,
                 Author = book.Author,
@@ -22,10 +21,7 @@ namespace LibraryManagementAssignment.Application.Mappers
                 Publisher = book.Publisher,
                 Description = book.Description,
                 Language = book.Language,
-                Location = book.Location,
-                PurchaseDate = book.PurchaseDate,
-                Price = book.Price,
-                TotalBook = book.TotalBook
+                Location = book.Location
             };
         }
     }

@@ -1,4 +1,5 @@
-﻿using LibraryManagementAssignment.Domain.Entities;
+﻿using LibraryManagementAssignment.Application.Mappers;
+using LibraryManagementAssignment.Domain.Entities;
 using LibraryManagementAssignment.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,9 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetAllUser()
         {
-            return Ok(await _userRepository.GetAllUser());
+            var user = await _userRepository.GetAllUser();
+            var userDto = user.Select(u => u.ToUserDto()).ToList();
+            return Ok(userDto);
         }
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> GetUserById(int id)
@@ -46,7 +49,8 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             }
 
             var updatedUser = await _userRepository.UpdateUser(user);
-            if (updatedUser == null)
+            var userDto = updatedUser.ToUserDto();
+            if (userDto == null)
             {
                 return BadRequest();
             }

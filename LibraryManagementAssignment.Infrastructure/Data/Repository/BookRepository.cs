@@ -1,4 +1,5 @@
-﻿using LibraryManagementAssignment.Domain.Entities;
+﻿using LibraryManagementAssignment.Application.Dto;
+using LibraryManagementAssignment.Domain.Entities;
 using LibraryManagementAssignment.Domain.Helpers;
 using LibraryManagementAssignment.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,10 @@ namespace LibraryManagementAssignment.Infrastructure.Data.Repository
 
         public async Task<IEnumerable<Book>> GetAllBooks()
         {
-            return await _context.Books.ToListAsync();
+            var books = await _context.Books.ToListAsync();
+
+            return books;
+
         }
 
         public async Task<Book> GetBookById(int id)
