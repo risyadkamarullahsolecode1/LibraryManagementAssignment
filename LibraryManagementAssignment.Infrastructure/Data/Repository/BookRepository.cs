@@ -79,7 +79,7 @@ namespace LibraryManagementAssignment.Infrastructure.Data.Repository
             else
             {
                 if(!string.IsNullOrEmpty(query.Title))
-                    books = books.Where(b => b.Author.ToLower().Contains(query.Title.ToLower()));
+                    books = books.Where(b => b.Title.ToLower().Contains(query.Title.ToLower()));
                 if (!string.IsNullOrEmpty(query.Title))
                     books = books.Where(b => b.Author.ToLower().Contains(query.Author.ToLower()));
                 if (!string.IsNullOrEmpty(query.ISBN))
