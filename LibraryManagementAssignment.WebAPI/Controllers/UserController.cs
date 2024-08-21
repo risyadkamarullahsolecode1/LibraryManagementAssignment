@@ -54,7 +54,7 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             {
                 return BadRequest();
             }
-            return Ok(updatedUser);
+            return Ok(userDto);
         }
         [HttpDelete("{id}")]
         public async Task<ActionResult<bool>> DeleteUser(int id)

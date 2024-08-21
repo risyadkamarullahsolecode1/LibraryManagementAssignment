@@ -27,5 +27,15 @@ namespace LibraryManagementAssignment.Application.Services
                 .Where(book => book.Language == language)
                 .ToList();
         }
+
+        public async Task<bool> DeleteStampBook(int id, string deleteStatus)
+        {
+            var deleted = await _bookRepository.GetBookById(id);
+            if (deleted == null)
+            {
+                return false;
+            }
+            return deleted.DeleteStatus == deleteStatus;
+        }
     }
 }

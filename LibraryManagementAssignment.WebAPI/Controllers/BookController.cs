@@ -76,14 +76,14 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
         public async Task <ActionResult<IEnumerable<Book>>> SearchBookLanguage([FromQuery]string language)
         {
             var booklanguage = await _bookServices.SearchBookLanguage(language);
-            return Ok(booklanguage);
+            var booklanguageDto = booklanguage.Select(x => x.ToBookDto()).ToList();
+            return Ok(booklanguageDto);
         }
-        [HttpGet("language-book")]
-        public async Task<ActionResult<IEnumerable<Book>>> SearchBookLanguageAsync([FromQuery]string language, [FromQuery]Pagination p)
+        [HttpDelete("delete-stamp")]
+        public async Task<ActionResult<bool>> DeleteStampBook(int id, string deleteStatus)
         {
-            var languagebook = await _bookRepository.SearchBookLanguage(language, p);
-            var bookDto = languagebook.ToBookDto();
-            return Ok(bookDto);
+            var deleteStamp = await _bookServices.DeleteStampBook(id, deleteStatus);
+            return Ok(deleteStamp);
         }
     }
 }

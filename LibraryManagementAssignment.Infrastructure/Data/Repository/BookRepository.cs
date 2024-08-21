@@ -58,7 +58,7 @@ namespace LibraryManagementAssignment.Infrastructure.Data.Repository
             {
                 return false;
             }
-            _context.Books.Remove(book);
+            _context.Books.Update(book);
             await _context.SaveChangesAsync();
             return true;
         }
@@ -94,10 +94,5 @@ namespace LibraryManagementAssignment.Infrastructure.Data.Repository
             return await books.Skip(skipNumber).Take(pagination.PageSize).ToListAsync();
         }
 
-        public async Task<Book> SearchBookLanguage(string language, Pagination p)
-        {
-            var skipNumber = (p.PageNumber - 1) * p.PageSize;
-            return await _context.Books.Skip(skipNumber).Take(p.PageSize).FirstOrDefaultAsync(b => b.Language.ToLower().Contains(language.ToLower()));
-        }
     }
 }

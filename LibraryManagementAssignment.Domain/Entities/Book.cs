@@ -29,7 +29,7 @@ namespace LibraryManagementAssignment.Domain.Entities
         public string? Publisher { get; set; }
         public string? Description { get; set; }
         [Required]
-        [RegularExpression("English|Spanish|French")]
+        [RegularExpression("English|Spanish|French", ErrorMessage ="Language must be English, Spanish or French")]
         public string? Language { get; set; }
         [Required]
         public string? Location { get; set; }
@@ -39,5 +39,7 @@ namespace LibraryManagementAssignment.Domain.Entities
         public int? Price { get; set; }
         [Required]
         public int? TotalBook { get; set; }
+        public string DeleteStatus { get; set; }
+        public bool DeleteStamp {  get; set; }
     }
 }
