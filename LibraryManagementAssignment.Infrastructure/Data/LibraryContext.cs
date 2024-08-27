@@ -1,4 +1,6 @@
 ﻿using LibraryManagementAssignment.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace LibraryManagementAssignment.Infrastructure.Data
 {
-    public class LibraryContext:DbContext
+    public partial class LibraryContext:IdentityDbContext<AppUser>
     {
         public DbSet<Book> Books { get; set; }
         public DbSet<User> Users { get; set; }

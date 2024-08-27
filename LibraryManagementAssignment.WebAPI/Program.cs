@@ -1,3 +1,5 @@
+using LibraryManagementAssignment.Application.Interfaces;
+using LibraryManagementAssignment.Application.Services;
 using LibraryManagementAssignment.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +23,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

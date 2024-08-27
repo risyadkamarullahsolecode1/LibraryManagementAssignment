@@ -93,6 +93,9 @@ namespace LibraryManagementAssignment.Infrastructure.Data.Repository
 
             return await books.Skip(skipNumber).Take(pagination.PageSize).ToListAsync();
         }
-
+        public async Task SaveChangesAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
     }
 }

@@ -11,6 +11,6 @@ namespace LibraryManagementAssignment.Application.Interfaces
     public interface IBookServices
     {
        Task<IEnumerable<Book>> SearchBookLanguage(string language);
-       Task<bool> DeleteStampBook(int id, string deleteStatus);
+       Task DeleteStampBook(int id, string deleteStatus);
     }
 }

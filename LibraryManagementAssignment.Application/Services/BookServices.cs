@@ -28,14 +28,18 @@ namespace LibraryManagementAssignment.Application.Services
                 .ToList();
         }
 
-        public async Task<bool> DeleteStampBook(int id, string deleteStatus)
+        public async Task DeleteStampBook(int id, string deleteStatus)
         {
             var deleted = await _bookRepository.GetBookById(id);
             if (deleted == null)
             {
-                return false;
+                throw new Exception($"Book with Id {id} not found");
             }
-            return deleted.DeleteStatus == deleteStatus;
+            deleted.DeleteStamp = true;
+            deleted.DeleteStatus = deleteStatus;
+
+            _bookRepository.UpdateBook(deleted);
+            await _bookRepository.SaveChangesAsync();
         }
     }
 }

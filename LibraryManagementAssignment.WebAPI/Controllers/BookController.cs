@@ -5,6 +5,7 @@ using LibraryManagementAssignment.Domain.Interfaces;
 using LibraryManagementAssignment.Application.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using LibraryManagementAssignment.Application.Dto;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LibraryManagementAssignment.WebAPI.Controllers
 {
@@ -20,7 +21,6 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             _bookRepository = bookRepository;
             _bookServices = bookServices;
         }
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {
@@ -79,11 +79,11 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             var booklanguageDto = booklanguage.Select(x => x.ToBookDto()).ToList();
             return Ok(booklanguageDto);
         }
-        [HttpDelete("delete-stamp")]
-        public async Task<ActionResult<bool>> DeleteStampBook(int id, string deleteStatus)
+        [HttpPut("delete-stamp/{id}")]
+        public async Task<ActionResult> DeleteStampBook(int id, string deleteStatus)
         {
-            var deleteStamp = await _bookServices.DeleteStampBook(id, deleteStatus);
-            return Ok(deleteStamp);
+            await _bookServices.DeleteStampBook(id, deleteStatus);
+            return Ok(new { id, deleteStatus });
         }
     }
 }
