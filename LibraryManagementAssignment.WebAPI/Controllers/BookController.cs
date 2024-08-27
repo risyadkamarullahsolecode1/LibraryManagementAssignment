@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace LibraryManagementAssignment.WebAPI.Controllers
 {
+    [Authorize]
     [Route("api/[Controller]")]
     [ApiController]
     public class BookController : ControllerBase
@@ -21,6 +22,7 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             _bookRepository = bookRepository;
             _bookServices = bookServices;
         }
+        [Authorize(Roles = "User")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {

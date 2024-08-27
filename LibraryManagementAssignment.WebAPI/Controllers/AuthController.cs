@@ -56,5 +56,11 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             var result = await _authService.CreateRoleAsync(rolename);
             return Ok(result);
         }
+        [HttpPost("assign-role")]
+        public async Task<IActionResult> AssignToRoleAsync(string userName, string rolename)
+        {
+            var result = await _authService.AssignToRoleAsync(userName, rolename);
+            return Ok(result);
+        }
     }
 }

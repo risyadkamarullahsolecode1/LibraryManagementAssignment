@@ -23,7 +23,10 @@ namespace LibraryManagementAssignment.Infrastructure
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IBookRepository, BookRepository>();
+
             services.AddScoped<IBookServices, BookServices>();
+            services.AddScoped<IUserService, UserService>();
+
             services.AddScoped<IAuthService, AuthService>();
 
             services.AddIdentity<AppUser, IdentityRole>(options =>

@@ -13,6 +13,6 @@ namespace LibraryManagementAssignment.Application.Interfaces
         Task<ResponseModel> SignUpAsync(RegisterModel model);
         Task<ResponseModel> LoginAsync(LoginModel model);
         Task<ResponseModel> CreateRoleAsync(string rolename);
-        //Task<ResponseModel> AssignRoleAsync();
+        Task<ResponseModel> AssignToRoleAsync(string userName, string rolename);
     }
 }

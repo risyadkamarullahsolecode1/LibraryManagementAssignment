@@ -1,4 +1,5 @@
-﻿using LibraryManagementAssignment.Application.Mappers;
+﻿using LibraryManagementAssignment.Application.Interfaces;
+using LibraryManagementAssignment.Application.Mappers;
 using LibraryManagementAssignment.Domain.Entities;
 using LibraryManagementAssignment.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly IUserService _userService;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IUserRepository userRepository, IUserService userService)
         {
             _userRepository = userRepository;
+            _userService = userService;
         }
 
         [HttpGet]
@@ -65,6 +68,12 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
                 return NotFound();
             }
             return Ok("User telah dihapus");
+        }
+        [HttpPut("note/{id}")]
+        public async Task<IActionResult> AttachNotes(int id, string notes)
+        {
+            await _userService.AttachNotes(id, notes);
+            return Ok();
         }
     }
 }

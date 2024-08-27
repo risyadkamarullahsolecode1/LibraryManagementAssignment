@@ -44,10 +44,6 @@ namespace LibraryManagementAssignment.Application.Services
                 Status = "Error",
                 Message = "User creation failed! Please check user details and try again."
             };
-            if (await _roleManager.RoleExistsAsync("User"))
-            {
-                await _userManager.AddToRoleAsync(user, "User");
-            }
             return new ResponseModel { Status = "Success", Message = "User created succesfully!" };
         }
         public async Task<ResponseModel> LoginAsync(LoginModel model)
@@ -56,7 +52,6 @@ namespace LibraryManagementAssignment.Application.Services
             if (user != null && await _userManager.CheckPasswordAsync(user, model.Password))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
-
                 var authClaims = new List<Claim>()
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
@@ -97,6 +92,15 @@ namespace LibraryManagementAssignment.Application.Services
             return new ResponseModel { Status = "Success", Message ="Role Created successfully!"};
         }
 
-     
+        public async Task<ResponseModel> AssignToRoleAsync(string userName, string rolename)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+  
+            if (await _roleManager.RoleExistsAsync($"{rolename}"))
+            {
+                await _userManager.AddToRoleAsync (user, rolename);
+            }
+            return new ResponseModel { Status = "Success", Message = "User created succesfully!" };
+        }
     }
 }
