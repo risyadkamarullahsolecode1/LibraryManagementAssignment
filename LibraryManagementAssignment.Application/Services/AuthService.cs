@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +27,7 @@ namespace LibraryManagementAssignment.Application.Services
             _roleManager = roleManager;
             _configuration = configuration;
         }
+        //Sign Up The User
         public async Task<ResponseModel> SignUpAsync(RegisterModel model)
         {
             var userExists = await _userManager.FindByNameAsync(model.Username);
@@ -46,6 +48,8 @@ namespace LibraryManagementAssignment.Application.Services
             };
             return new ResponseModel { Status = "Success", Message = "User created succesfully!" };
         }
+
+        //Login user
         public async Task<ResponseModel> LoginAsync(LoginModel model)
         {
             var user = await _userManager.FindByNameAsync(model.Username);
@@ -80,11 +84,11 @@ namespace LibraryManagementAssignment.Application.Services
                     Roles = userRoles.ToList(),
                     Status = "Success"
                 };
-                //return new ResponseModel { Status = "Success", Message="User successfully login"};
             }
             return new ResponseModel { Status = "Error", Message = "Password Not valid!" };
 
         }
+        // Create Role
         public async Task<ResponseModel> CreateRoleAsync(string rolename)
         {
             if (!await _roleManager.RoleExistsAsync(rolename)) 
@@ -92,6 +96,7 @@ namespace LibraryManagementAssignment.Application.Services
             return new ResponseModel { Status = "Success", Message ="Role Created successfully!"};
         }
 
+        // Assign user to role that already created before
         public async Task<ResponseModel> AssignToRoleAsync(string userName, string rolename)
         {
             var user = await _userManager.FindByNameAsync(userName);

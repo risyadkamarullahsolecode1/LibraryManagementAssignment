@@ -1,5 +1,8 @@
-﻿using LibraryManagementAssignment.Application.Interfaces;
+﻿using LibraryManagementAssignment.Application.Dto.Account;
+using LibraryManagementAssignment.Application.Interfaces;
+using LibraryManagementAssignment.Domain.Entities;
 using LibraryManagementAssignment.Domain.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +17,7 @@ namespace LibraryManagementAssignment.Application.Services
 
         public UserService(IUserRepository userRepository)
         {
-        _userRepository = userRepository; 
+            _userRepository = userRepository;
         }
 
         public async Task AttachNotes(int id, string notes)
@@ -24,7 +27,7 @@ namespace LibraryManagementAssignment.Application.Services
             {
                 throw new Exception($"user with Id {id} not found");
             }
-            notes = notes.Trim();
+            note.Note = notes;
 
             _userRepository.UpdateUser(note);
             await _userRepository.SaveChangesAsync();

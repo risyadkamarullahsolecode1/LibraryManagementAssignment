@@ -9,6 +9,5 @@ namespace LibraryManagementAssignment.Domain.Entities
 {
     public class AppUser:IdentityUser
     {
-
     }
 }

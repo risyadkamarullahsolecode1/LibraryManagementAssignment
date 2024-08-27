@@ -17,8 +17,6 @@ namespace LibraryManagementAssignment.Application.Mappers
                 Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                LibraryCardNumber = user.LibraryCardNumber,
-                LibraryCardExpDate = user.LibraryCardExpDate,
                 Position = user.Position,
                 Previlege = user.Previlege
             };

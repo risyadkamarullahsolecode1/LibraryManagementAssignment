@@ -2,10 +2,12 @@
 using LibraryManagementAssignment.Application.Mappers;
 using LibraryManagementAssignment.Domain.Entities;
 using LibraryManagementAssignment.Domain.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagementAssignment.WebAPI.Controllers
 {
+    [Authorize]
     [Route("api/[Controller]")]
     [ApiController]
     public class UserController : ControllerBase
@@ -70,10 +72,15 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             return Ok("User telah dihapus");
         }
         [HttpPut("note/{id}")]
-        public async Task<IActionResult> AttachNotes(int id, string notes)
+        public async Task<IActionResult> AttachNotes(int id, [FromBody]string notes)
         {
+            var user = await _userRepository.GetUserById(id);
+            if (user == null)
+            {
+                return BadRequest();
+            }
             await _userService.AttachNotes(id, notes);
-            return Ok();
+            return Ok(user);
         }
     }
 }

@@ -29,13 +29,13 @@ namespace LibraryManagementAssignment.Infrastructure.Data.Repository
         public async Task<User> AddUser(User user)
         {
             _context.Users.Add(user);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return user;
         }
         public async Task<User> UpdateUser(User user)
         {
             _context.Users.Update(user);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             return user;
         }
         public async Task<bool> DeleteUser(int id)
