@@ -64,5 +64,17 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             var result = await _authService.UpdateToRoleAsync(userName, rolename);
             return Ok(result);
         }
+        [HttpDelete]
+        public async Task<IActionResult> DeleteRoleAsync(string userName, [FromBody] string rolename)
+        {
+            var result = await _authService.DeleteToRoleAsync(userName, rolename);
+            return Ok(result);
+        }
+        [HttpPost("logout")]
+        public async Task<IActionResult> LogoutAsync(string userName)
+        {
+            var result = await _authService.LogoutAsync(userName);
+            return Ok(result);
+        }
     }
 }

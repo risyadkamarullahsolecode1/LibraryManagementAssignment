@@ -18,6 +18,7 @@ namespace LibraryManagementAssignment.Application.Interfaces
         Task<ResponseModel> UpdateToRoleAsync(string userName, string rolename);
         string GenerateRefreshToken();
         ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
-        //Task<ResponseModel> LogoutAsync(string userName);
+        Task<ResponseModel> DeleteToRoleAsync(string userName, string rolename);
+        Task<ResponseModel> LogoutAsync(string userName);
     }
 }

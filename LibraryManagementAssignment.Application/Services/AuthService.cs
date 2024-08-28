@@ -18,6 +18,7 @@ namespace LibraryManagementAssignment.Application.Services
 {
     public class AuthService:IAuthService
     {
+        private readonly SignInManager<IdentityRole> _signInManager;
         private readonly UserManager<AppUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
@@ -79,7 +80,7 @@ namespace LibraryManagementAssignment.Application.Services
 
                 var refreshToken = GenerateRefreshToken();
                 user.RefreshToken = refreshToken;
-                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(8);
+                var refreshTokenExpiryDate = user.RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(8);
 
                 await _userManager.UpdateAsync(user);
 
@@ -87,7 +88,7 @@ namespace LibraryManagementAssignment.Application.Services
                 {
                     Token = new JwtSecurityTokenHandler().WriteToken(token),
                     RefreshToken = refreshToken,
-                    RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(8).AddHours(8),
+                    RefreshTokenExpiryTime = refreshTokenExpiryDate,
                     ExpiredOn = token.ValidTo,
                     Message = "User successfully login!",
                     Roles = userRoles.ToList(),
@@ -124,7 +125,7 @@ namespace LibraryManagementAssignment.Application.Services
             {
                 await _userManager.AddToRoleAsync(user, rolename);
             }
-            return new ResponseModel { Status = "Success", Message = "User updated succesfully!" };
+            return new ResponseModel { Status = "Success", Message = "User roles updated succesfully!" };
         }
 
         public string GenerateRefreshToken()
@@ -162,15 +163,25 @@ namespace LibraryManagementAssignment.Application.Services
             }
             return principal;
         }
-
-        /**public async Task<ResponseModel> LogoutAsync(string userName)
+        //Delete roles for user
+        public async Task<ResponseModel> DeleteToRoleAsync(string userName, string rolename)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (await _roleManager.RoleExistsAsync($"{rolename}"))
+            {
+                await _userManager.RemoveFromRoleAsync(user, rolename);
+            }
+            return new ResponseModel { Status = "Success", Message = "User roles deleted succesfully!" };
+        }
+        public async Task<ResponseModel> LogoutAsync(string userName)
         {
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
                 throw new Exception("There is no username like this in database");
             }
-            await _userManager.RemoveAuthenticationTokenAsync(user);
-        }**/
+            await _signInManager.SignOutAsync().ConfigureAwait(false);
+            return new ResponseModel { Status = "Success", Message = "User successfully logout" };
+        }
     }
 }
