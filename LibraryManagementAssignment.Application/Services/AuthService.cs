@@ -10,6 +10,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -76,9 +77,17 @@ namespace LibraryManagementAssignment.Application.Services
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256));
 
+                var refreshToken = GenerateRefreshToken();
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(8);
+
+                await _userManager.UpdateAsync(user);
+
                 return new ResponseModel
                 {
                     Token = new JwtSecurityTokenHandler().WriteToken(token),
+                    RefreshToken = refreshToken,
+                    RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(8).AddHours(8),
                     ExpiredOn = token.ValidTo,
                     Message = "User successfully login!",
                     Roles = userRoles.ToList(),
@@ -86,7 +95,6 @@ namespace LibraryManagementAssignment.Application.Services
                 };
             }
             return new ResponseModel { Status = "Error", Message = "Password Not valid!" };
-
         }
         // Create Role
         public async Task<ResponseModel> CreateRoleAsync(string rolename)
@@ -107,5 +115,62 @@ namespace LibraryManagementAssignment.Application.Services
             }
             return new ResponseModel { Status = "Success", Message = "User created succesfully!" };
         }
+
+        // update role for user
+        public async Task<ResponseModel> UpdateToRoleAsync(string userName, string rolename)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (await _roleManager.RoleExistsAsync($"{rolename}"))
+            {
+                await _userManager.AddToRoleAsync(user, rolename);
+            }
+            return new ResponseModel { Status = "Success", Message = "User updated succesfully!" };
+        }
+
+        public string GenerateRefreshToken()
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomNumber);
+                return Convert.ToBase64String(randomNumber);
+            }
+        }
+
+        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        {
+            var jwtSettings = _configuration.GetSection("JWT");
+
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = true,
+                ValidateIssuer = true,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("SECRET"))),
+                ValidateLifetime = true,
+                ValidIssuer = jwtSettings["Issuer"],
+                ValidAudience = jwtSettings["Audience"]
+            };
+            var tokenHandler = new JwtSecurityTokenHandler();
+            SecurityToken securityToken;
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
+
+            var jwtSecurityToken = securityToken as JwtSecurityToken;
+            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid Token");
+            }
+            return principal;
+        }
+
+        /**public async Task<ResponseModel> LogoutAsync(string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                throw new Exception("There is no username like this in database");
+            }
+            await _userManager.RemoveAuthenticationTokenAsync(user);
+        }**/
     }
 }

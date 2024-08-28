@@ -34,21 +34,17 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
         }
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] LoginModel model)
-
         {
-
             if (!ModelState.IsValid)
 
                 return BadRequest(ModelState);
 
             var result = await _authService.LoginAsync(model);
-
             if (result.Status == "Error")
 
                 return BadRequest(result.Message);
 
             return Ok(result);
-
         }
         [HttpPost("set-role")]
         public async Task<IActionResult> CreateRoleAsync(string rolename)
@@ -57,9 +53,15 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             return Ok(result);
         }
         [HttpPost("assign-role")]
-        public async Task<IActionResult> AssignToRoleAsync(string userName, string rolename)
+        public async Task<IActionResult> AssignToRoleAsync(string userName, [FromBody]string rolename)
         {
             var result = await _authService.AssignToRoleAsync(userName, rolename);
+            return Ok(result);
+        }
+        [HttpPut]
+        public async Task<IActionResult> UpdateRoleAsync(string userName, [FromBody] string rolename)
+        {
+            var result = await _authService.UpdateToRoleAsync(userName, rolename);
             return Ok(result);
         }
     }

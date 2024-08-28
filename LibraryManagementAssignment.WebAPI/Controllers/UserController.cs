@@ -1,5 +1,7 @@
-﻿using LibraryManagementAssignment.Application.Interfaces;
+﻿using LibraryManagementAssignment.Application.Dto.Account;
+using LibraryManagementAssignment.Application.Interfaces;
 using LibraryManagementAssignment.Application.Mappers;
+using LibraryManagementAssignment.Application.Services;
 using LibraryManagementAssignment.Domain.Entities;
 using LibraryManagementAssignment.Domain.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -81,6 +83,22 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             }
             await _userService.AttachNotes(id, notes);
             return Ok(user);
+        }
+        [HttpPost("Add-User-Roles")]
+        public async Task<IActionResult> RegisterAsync([FromBody] RegisterUser registerUser)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+            var result = await _userService.ResigtrationUser(registerUser);
+
+            if (result.Status == "Error")
+            {
+                return BadRequest(result.Message);
+            }
+
+            return Ok(result);
         }
     }
 }
