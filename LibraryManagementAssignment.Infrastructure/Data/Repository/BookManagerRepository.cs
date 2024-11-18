@@ -27,8 +27,8 @@ namespace LibraryManagementAssignment.Infrastructure.Data.Repository
         public async Task<int> GetBorrowedBooksCountByUser(int userId)
         {
             return await _context.BookManagers
-                         .Where(lb => lb.UserId == userId && lb.TanggalKembali >= DateOnly.FromDateTime(DateTime.Now))
-                         .CountAsync();
+                .Where(lb => lb.UserId == userId && lb.TanggalKembali >= DateOnly.FromDateTime(DateTime.Now))
+                .CountAsync();
         }
 
         public BookManager GetBorrowRecord(int userId, int bookId)
@@ -38,7 +38,7 @@ namespace LibraryManagementAssignment.Infrastructure.Data.Repository
 
         public async Task AddBorrowRecord(BookManager borrowRecord)
         {
-            _context.BookManagers.AddAsync(borrowRecord);
+            await _context.BookManagers.AddAsync(borrowRecord);
             await _context.SaveChangesAsync();
             return;
         }

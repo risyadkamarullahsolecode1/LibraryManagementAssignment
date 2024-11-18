@@ -19,13 +19,11 @@ namespace LibraryManagementAssignment.Domain.Entities
         [Required]
         public string? LastName { get; set; }
         public int? LibraryCardNumber { get; set; }
-        public DateTime? LibraryCardExpDate { get; set; }
+        public DateOnly? LibraryCardExpDate { get; set; }
         [Required]
         public string? Position { get; set; }
         [Required]
         public string? Previlege { get; set; }
         public string? Note { get; set; }
-        public string AppUserId { get; set; }
-        public virtual AppUser AppUser { get; set; }
     }
 }

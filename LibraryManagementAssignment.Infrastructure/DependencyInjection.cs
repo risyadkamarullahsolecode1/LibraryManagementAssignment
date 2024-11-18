@@ -29,7 +29,7 @@ namespace LibraryManagementAssignment.Infrastructure
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IBookManagerRepository, BookManagerRepository>();
-            
+            services.AddScoped<IBookManagerService, BookManagerService>();
             services.AddIdentity<AppUser, IdentityRole>(options =>
             {
                 options.Password.RequireLowercase = false;

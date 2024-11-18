@@ -16,7 +16,7 @@ namespace LibraryManagementAssignment.Application.Dto.Account
         public string? Email { get; set; }
         public string? Password { get; set; }
         public int? LibraryCardNumber { get; set; }
-        public DateTime? LibraryCardExpDate { get; set; }
+        public DateOnly? LibraryCardExpDate { get; set; }
         public string? Position { get; set; }
         public string? Previlege { get; set; }
     }

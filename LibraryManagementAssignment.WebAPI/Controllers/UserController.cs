@@ -46,6 +46,7 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             var createdUser = await _userRepository.AddUser(user);
             return CreatedAtAction(nameof(AddUser), createdUser);
         }
+
         [HttpPut("{id}")]
         public async Task<ActionResult<User>> UpdateUser(int id, User user)
         {

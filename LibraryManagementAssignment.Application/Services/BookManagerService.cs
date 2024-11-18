@@ -34,10 +34,10 @@ namespace LibraryManagementAssignment.Application.Services
             Book book = await _bookRepository.GetBookById(bookId); // Await the async method
             User user = await _userRepository.GetUserById(userId);
 
-            int currentBorrowedBookCount = await _bookManagerRepository.GetBorrowedBooksCountByUser(userId);
+            int currentBorrowedBookCount = await _bookManagerRepository.GetBorrowedBooksCountByUser(user.Id);
 
             // Check if the user has already borrowed the maximum number of books
-            if (currentBorrowedBookCount >= maxBooks)
+            if (currentBorrowedBookCount > maxBooks)
             {
                 throw new InvalidOperationException("User has already borrowed the maximum number of books allowed.");
             }
