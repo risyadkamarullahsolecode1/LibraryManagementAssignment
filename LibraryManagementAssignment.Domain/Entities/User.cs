@@ -25,5 +25,7 @@ namespace LibraryManagementAssignment.Domain.Entities
         [Required]
         public string? Previlege { get; set; }
         public string? Note { get; set; }
+        public string AppUserId { get; set; }
+        public virtual AppUser AppUser { get; set; }
     }
 }

@@ -15,6 +15,7 @@ namespace LibraryManagementAssignment.Infrastructure.Data
     {
         public DbSet<Book> Books { get; set; }
         public DbSet<User> Users { get; set; }
+        public DbSet<BookManager> BookManagers { get; set; }
 
         public LibraryContext(DbContextOptions<LibraryContext> options) : base(options) { }
 

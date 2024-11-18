@@ -6,10 +6,11 @@ using LibraryManagementAssignment.Application.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using LibraryManagementAssignment.Application.Dto;
 using Microsoft.AspNetCore.Authorization;
+using LibraryManagementAssignment.Application.Dto.Search;
+using LibraryManagementAssignment.Application.Services;
 
 namespace LibraryManagementAssignment.WebAPI.Controllers
 {
-    [Authorize]
     [Route("api/[Controller]")]
     [ApiController]
     public class BookController : ControllerBase
@@ -22,7 +23,6 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             _bookRepository = bookRepository;
             _bookServices = bookServices;
         }
-        [Authorize(Roles = "User")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
         {
@@ -30,7 +30,6 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             var bookDto = books.Select(b => b.ToBookDto()).ToList();
             return Ok(bookDto);
         }
-        [Authorize(Roles = "User")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Book>> GetBookById(int id)
         {
@@ -42,14 +41,12 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             var bookDto = book.ToBookDto();
             return Ok(bookDto);
         }
-        [Authorize(Roles = "Librarian")]
         [HttpPost]
         public async Task<ActionResult<Book>> AddBook(Book book)
         {
             var createdBook = await _bookRepository.AddBook(book);
             return Ok(createdBook);
         }
-        [Authorize(Roles = "Librarian")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBook(int id, Book book)
         {
@@ -59,7 +56,6 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             var bookDto = createdBook.ToBookDto();
             return Ok(bookDto);
         }
-        [Authorize(Roles = "Librarian")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
@@ -70,14 +66,7 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             }
             return Ok("Buku telah dihapus");
         }
-        [Authorize(Roles = "User")]
-        [HttpGet("search-book")]
-        public async Task<ActionResult<IEnumerable<Book>>> SearchBookAsync([FromQuery]QueryObject query,[FromQuery] Pagination pagination)
-        {
-            var querybook = await _bookRepository.SearchBookAsync(query, pagination);
-            return Ok(querybook);
-        }
-        [Authorize(Roles = "User")]
+        
         [HttpGet("search-book-language")]
         public async Task <ActionResult<IEnumerable<Book>>> SearchBookLanguage([FromQuery]string language)
         {
@@ -90,6 +79,38 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
         {
             await _bookServices.DeleteStampBook(id, deleteStatus);
             return Ok(new { id, deleteStatus });
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchBooks([FromQuery] SearchDto searchDto, [FromQuery] Pagination pagination)
+        {
+            try
+            {
+                var results = await _bookServices.SearchBooksAsync(searchDto, pagination);
+                return Ok(results);
+            }
+            catch (ApplicationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
+        [HttpGet("{id}/details")]
+        public async Task<IActionResult> GetBookDetails(int id)
+        {
+            try
+            {
+                var bookDetails = await _bookServices.GetBookDetailsAsync(id);
+                return Ok(bookDetails);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ApplicationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

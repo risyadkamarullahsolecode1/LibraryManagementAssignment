@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LibraryManagementAssignment.WebAPI.Controllers
 {
-    [Authorize]
     [Route("api/[Controller]")]
     [ApiController]
     public class UserController : ControllerBase
