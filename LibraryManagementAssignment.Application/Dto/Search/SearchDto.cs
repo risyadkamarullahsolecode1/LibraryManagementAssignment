@@ -15,5 +15,7 @@ namespace LibraryManagementAssignment.Application.Dto.Search
         public string? Language { get; set; }
         public string? Subject { get; set; }
         public string? QueryOperators { get; set; }
+        public string? SortBy { get; set; } = null;
+        public string? SortOrder { get; set; } = "asc";
     }
 }

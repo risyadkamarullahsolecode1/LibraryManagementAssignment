@@ -21,6 +21,29 @@ namespace LibraryManagementAssignment.Application.Services
             _bookRepository = bookRepository;
         }
 
+        public async Task<IEnumerable<Book>> GetAllBookAsync(Pagination pagination)
+        {
+            var books = await _bookRepository.GetAllBooks();
+            // If pagination is null or neither pageSize nor pageNumber is provided, return all jobs
+            if (pagination == null || (pagination.PageSize == null && pagination.PageNumber == null))
+            {
+                return books; // Return all job posts without pagination
+            }
+
+            // Apply default values for pagination if only one of pageSize or pageNumber is provided
+            var pageSize = pagination.PageSize ?? 10;  // Default page size to 10 if not provided
+            var pageNumber = pagination.PageNumber ?? 1;  // Default page number to 1 if not provided
+
+            // Ensure pageSize and pageNumber are valid
+            pageSize = Math.Max(1, pageSize);  // Ensure page size is at least 1
+            pageNumber = Math.Max(1, pageNumber);  // Ensure page number is at least 1
+
+            var skipNumber = (pageNumber - 1) * pageSize;
+
+            // Return the paginated result
+            return books.Skip(skipNumber).Take(pageSize);
+        }
+
         public async Task<Book> AddBookAsync(Book book)
         {
             await _bookRepository.AddBook(book);
@@ -90,7 +113,7 @@ namespace LibraryManagementAssignment.Application.Services
                             books = books.Where(b => b.Subject.ToLower().Contains(query.Subject.ToLower()));
                     }
                 }
-
+                var total = books.Count();
                 // Sort books by Title (default sort order)
                 books = books.OrderBy(b => b.Title);
 
@@ -155,6 +178,58 @@ namespace LibraryManagementAssignment.Application.Services
                 // Log the error here as needed
                 throw new ApplicationException("An error occurred while retrieving book details.", ex);
             }
+        }
+
+        public async Task<object> SearchBooksBasicAsync(QueryObject query)
+        {
+            var temp = _bookRepository.GetBooksQueryable();
+
+            if (!string.IsNullOrEmpty(query.Keyword))
+            {
+                temp = temp.Where(b =>
+                b.Title.ToLower().Contains(query.Keyword.ToLower()) ||
+                b.Author.ToLower().Contains(query.Keyword.ToLower()) ||
+                b.ISBN.ToLower().Contains(query.Keyword.ToLower()) ||
+                b.Subject.ToLower().Contains(query.Keyword.ToLower())
+                );
+            }
+            if (!string.IsNullOrEmpty(query.Title))
+                temp = temp.Where(b => b.Title.ToLower().Contains(query.Title.ToLower()));
+            if (!string.IsNullOrEmpty(query.Author))
+                temp = temp.Where(b => b.Author.ToLower().Contains(query.Author.ToLower()));
+            if (!string.IsNullOrEmpty(query.ISBN))
+                temp = temp.Where(b => b.ISBN.ToLower().Contains(query.ISBN.ToLower()));
+            if (!string.IsNullOrEmpty(query.Subject))
+                temp = temp.Where(b => b.Subject.ToLower().Contains(query.Subject.ToLower()));
+            var total = temp.Count();
+
+            if (!string.IsNullOrWhiteSpace(query.SortBy))
+            {
+                switch (query.SortBy)
+                {
+                    case "author":
+                        temp = query.SortOrder.Equals("asc") ? temp.OrderBy(s => s.Author) :
+                        temp.OrderByDescending(s => s.Author);
+                        break;
+
+                    case "isbn":
+                        temp = query.SortOrder.Equals("asc") ? temp.OrderBy(s => s.ISBN) :
+                        temp.OrderByDescending(s => s.ISBN);
+                        break;
+                    case "id":
+                        temp = query.SortOrder.Equals("asc") ? temp.OrderBy(s => s.Id) :
+                        temp.OrderByDescending(s => s.Id);
+                        break;
+
+                    default:
+                        temp = query.SortOrder.Equals("asc") ? temp.OrderBy(s => s.Title) :
+                        temp.OrderByDescending(s => s.Title);
+                        break;
+                }
+            }
+            var skipNumber = (query.PageNumber - 1) * query.PageSize;
+            var list = await temp.Skip(skipNumber).Take(query.PageSize).ToListAsync();
+            return new { total = total, data = list };
         }
     }
 }

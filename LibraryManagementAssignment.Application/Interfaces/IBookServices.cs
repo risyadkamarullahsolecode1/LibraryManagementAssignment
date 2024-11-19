@@ -11,10 +11,12 @@ namespace LibraryManagementAssignment.Application.Interfaces
 {
     public interface IBookServices
     {
+        Task<IEnumerable<Book>> GetAllBookAsync(Pagination pagination);
         Task<Book> AddBookAsync(Book book);
         Task<IEnumerable<Book>> SearchBookLanguage(string language);
         Task DeleteStampBook(int id, string deleteStatus);
         Task<IEnumerable<DisplaySearchDto>> SearchBooksAsync(SearchDto query, Pagination pagination);
         Task<DetailBookDto> GetBookDetailsAsync(int bookId);
+        Task<object> SearchBooksBasicAsync(QueryObject query);
     }
 }

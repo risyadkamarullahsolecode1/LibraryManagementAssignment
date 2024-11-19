@@ -24,9 +24,9 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             _bookServices = bookServices;
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks()
+        public async Task<ActionResult<IEnumerable<Book>>> GetBooks([FromQuery]Pagination pagination)
         {
-            var books = await _bookRepository.GetAllBooks();
+            var books = await _bookServices.GetAllBookAsync(pagination);
             var bookDto = books.Select(b => b.ToBookDto()).ToList();
             return Ok(bookDto);
         }
@@ -101,6 +101,23 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             try
             {
                 var bookDetails = await _bookServices.GetBookDetailsAsync(id);
+                return Ok(bookDetails);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (ApplicationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+        [HttpGet("search-basic")]
+        public async Task<IActionResult> SearchBookBasic([FromQuery]QueryObject query)
+        {
+            try
+            {
+                var bookDetails = await _bookServices.SearchBooksBasicAsync(query);
                 return Ok(bookDetails);
             }
             catch (KeyNotFoundException ex)
