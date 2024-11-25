@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace LibraryManagementAssignment.Infrastructure.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20241118042431_updatetable3")]
-    partial class updatetable3
+    [Migration("20241125023922_addtabletodb")]
+    partial class addtabletodb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -204,7 +204,6 @@ namespace LibraryManagementAssignment.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AppUserId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FirstName")
@@ -215,8 +214,8 @@ namespace LibraryManagementAssignment.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("LibraryCardExpDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly?>("LibraryCardExpDate")
+                        .HasColumnType("date");
 
                     b.Property<int?>("LibraryCardNumber")
                         .HasColumnType("integer");
@@ -394,9 +393,7 @@ namespace LibraryManagementAssignment.Infrastructure.Migrations
                 {
                     b.HasOne("LibraryManagementAssignment.Domain.Entities.AppUser", "AppUser")
                         .WithMany("Users")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AppUserId");
 
                     b.Navigation("AppUser");
                 });

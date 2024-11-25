@@ -35,17 +35,31 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> LoginAsync([FromBody] LoginModel model)
         {
-            if (!ModelState.IsValid)
-
-                return BadRequest(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var result = await _authService.LoginAsync(model);
-            if (result.Status == "Error")
+            if (result.Status == "Error") return Unauthorized();
 
-                return BadRequest(result.Message);
+            SetRefreshTokenCookie("AuthToken", result.Token, result.ExpiredOn);
+
+            SetRefreshTokenCookie("RefreshToken", result.RefreshToken,
+            result.RefreshTokenExpiryTime);
 
             return Ok(result);
         }
+
+        private void SetRefreshTokenCookie(string tokenType, string? token, DateTime? expires)
+        {
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true, // Hanya dapat diakses oleh server
+                Secure = true, // Hanya dikirim melalui HTTPS
+                SameSite = SameSiteMode.Strict, // Cegah serangan CSRF
+                Expires = expires // Waktu kadaluarsa token
+            };
+            Response.Cookies.Append(tokenType, token, cookieOptions);
+        }
+
         [HttpPost("set-role")]
         public async Task<IActionResult> CreateRoleAsync(string rolename)
         {
@@ -70,10 +84,42 @@ namespace LibraryManagementAssignment.WebAPI.Controllers
             var result = await _authService.DeleteToRoleAsync(userName, rolename);
             return Ok(result);
         }
+        [Authorize]
         [HttpPost("logout")]
-        public async Task<IActionResult> LogoutAsync(string userName)
+        public async Task<IActionResult> LogoutAsync()
         {
-            var result = await _authService.LogoutAsync(userName);
+            try
+            {
+                // Hapus cookie
+                Response.Cookies.Delete("AuthToken", new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                });
+
+                // Delete the RefreshToken cookie if it exists
+                /**Response.Cookies.Delete("RefreshToken", new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                });**/
+                return Ok("Logout successfully");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "An error occurred during logout");
+            }
+            //var result = await _authService.LogoutAsync(userName);
+            //return Ok(result);
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken(string refreshedToken)
+        {
+            var refreshToken = Request.Cookies["RefreshToken"];
+            var result = await _authService.RefreshAccessTokenAsync(refreshedToken);
             return Ok(result);
         }
     }

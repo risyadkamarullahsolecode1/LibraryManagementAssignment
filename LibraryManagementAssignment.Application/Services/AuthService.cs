@@ -1,7 +1,9 @@
-﻿using LibraryManagementAssignment.Application.Dto.Account;
+﻿using LibraryManagementAssignment.Application.Dto;
+using LibraryManagementAssignment.Application.Dto.Account;
 using LibraryManagementAssignment.Application.Interfaces;
 using LibraryManagementAssignment.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -74,29 +76,31 @@ namespace LibraryManagementAssignment.Application.Services
                 var token = new JwtSecurityToken(
                     issuer: _configuration["JWT:Issuer"],
                     audience: _configuration["JWT:Audience"],
-                    expires: DateTime.Now.AddHours(3),
+                    expires: DateTime.Now.AddMinutes(1),
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256));
 
                 var refreshToken = GenerateRefreshToken();
                 user.RefreshToken = refreshToken;
-                var refreshTokenExpiryDate = user.RefreshTokenExpiryTime = DateTime.UtcNow.AddHours(8);
+                var refreshTokenExpiryDate = user.RefreshTokenExpiryTime = DateTime.UtcNow.AddMinutes(2);
 
                 await _userManager.UpdateAsync(user);
 
                 return new ResponseModel
                 {
                     Token = new JwtSecurityTokenHandler().WriteToken(token),
+                    ExpiredOn = token.ValidTo,
                     RefreshToken = refreshToken,
                     RefreshTokenExpiryTime = refreshTokenExpiryDate,
-                    ExpiredOn = token.ValidTo,
                     Message = "User successfully login!",
                     Roles = userRoles.ToList(),
-                    Status = "Success"
+                    Status = "Success",
+                    User = user,
                 };
             }
             return new ResponseModel { Status = "Error", Message = "Password Not valid!" };
         }
+
         // Create Role
         public async Task<ResponseModel> CreateRoleAsync(string rolename)
         {
@@ -182,6 +186,64 @@ namespace LibraryManagementAssignment.Application.Services
             }
             await _signInManager.SignOutAsync().ConfigureAwait(false);
             return new ResponseModel { Status = "Success", Message = "User successfully logout" };
+        }
+
+        public async Task<RefreshTokenResponseDto> RefreshAccessTokenAsync(string refreshToken)
+        {
+            var user = await _userManager.Users.Where(u => u.RefreshToken == refreshToken).SingleOrDefaultAsync();
+
+            if (user == null)
+            {
+                return new RefreshTokenResponseDto
+                {
+                    Status = "Error",
+                    Message = $"User with {refreshToken} refresh token does not exist."
+                };
+            }
+
+            if (user.RefreshTokenExpiryTime < DateTime.UtcNow)
+            {
+                return new RefreshTokenResponseDto
+                {
+                    Status = "Error",
+                    Message = "Refresh token is not valid. Please log in.",
+                };
+            }
+            else
+            {
+                var userRoles = await _userManager.GetRolesAsync(user);
+
+                var authClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.UserName!),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                };
+
+                foreach (var userRole in userRoles)
+                {
+                    authClaims.Add(new Claim(ClaimTypes.Role, userRole));
+                }
+
+                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:SigningKey"]!));
+
+                var token = new JwtSecurityToken(
+                    issuer: _configuration["JWT:Issuer"],
+                    audience: _configuration["JWT:Audience"],
+                    expires: DateTime.Now.AddDays(1),
+                    claims: authClaims,
+                    signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+                );
+
+                return new RefreshTokenResponseDto
+                {
+                    Status = "Success",
+                    Message = "Access token refreshed successfully!",
+                    AccessToken = new JwtSecurityTokenHandler().WriteToken(token),
+                    AccessTokenExpiryTime = token.ValidTo,
+                    RefreshToken = user.RefreshToken,
+                    RefreshTokenExpiryTime = user.RefreshTokenExpiryTime
+                };
+            }
         }
     }
 }

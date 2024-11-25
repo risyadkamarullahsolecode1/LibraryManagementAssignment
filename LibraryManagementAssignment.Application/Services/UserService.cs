@@ -56,6 +56,8 @@ namespace LibraryManagementAssignment.Application.Services
                 Status = "Error",
                 Message = "User creation failed! Please check user details and try again."
             };
+            var userId = userApp.Id;
+
             User users = new User()
             {
                 Id = registerUser.Id,
@@ -64,7 +66,8 @@ namespace LibraryManagementAssignment.Application.Services
                 LibraryCardNumber = registerUser.LibraryCardNumber,
                 LibraryCardExpDate = registerUser.LibraryCardExpDate,
                 Position = registerUser.Position,
-                Previlege = registerUser.Previlege
+                Previlege = registerUser.Previlege,
+                AppUserId = userId,
             };
             await _userRepository.AddUser(users);
             await _userRepository.SaveChangesAsync();

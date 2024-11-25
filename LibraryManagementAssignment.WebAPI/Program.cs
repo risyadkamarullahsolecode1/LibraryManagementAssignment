@@ -1,6 +1,7 @@
 using LibraryManagementAssignment.Application.Interfaces;
 using LibraryManagementAssignment.Application.Services;
 using LibraryManagementAssignment.Infrastructure;
+using Microsoft.AspNetCore.CookiePolicy;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,12 @@ builder.Services.AddCors(options =>
             .WithOrigins("http://localhost:5173") // Replace with your React app's URL
             .AllowAnyHeader()
             .AllowAnyMethod());
+});
+
+builder.Services.AddCookiePolicy(options =>
+{
+    options.HttpOnly = HttpOnlyPolicy.Always;
+    options.Secure = CookieSecurePolicy.Always;
 });
 // Add services to the container.
 
@@ -30,8 +37,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("AllowReactApp");
 app.UseHttpsRedirection();
+
+app.UseCors("AllowReactApp");
 
 app.UseAuthentication();
 
