@@ -15,7 +15,7 @@ namespace LibraryManagementAssignment.Infrastructure.Data
         {
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("C:\\Users\\Risyad Kamarullah\\source\\repos\\LibraryManagementAssignment\\LibraryManagementAssignment.WebAPI\\appsettings.json")
+                .AddJsonFile("C:\\Users\\USER\\source\\repos\\LibraryManagementAssignment\\LibraryManagementAssignment.WebAPI\\appsettings.json")
                 .Build();
 
             var services = new ServiceCollection();

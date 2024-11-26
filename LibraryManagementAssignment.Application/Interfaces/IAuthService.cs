@@ -1,4 +1,5 @@
-﻿using LibraryManagementAssignment.Application.Dto.Account;
+﻿using LibraryManagementAssignment.Application.Dto;
+using LibraryManagementAssignment.Application.Dto.Account;
 using LibraryManagementAssignment.Domain.Entities;
 using System;
 using System.Collections.Generic;
@@ -20,5 +21,6 @@ namespace LibraryManagementAssignment.Application.Interfaces
         ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
         Task<ResponseModel> DeleteToRoleAsync(string userName, string rolename);
         Task<ResponseModel> LogoutAsync(string userName);
+        Task<RefreshTokenResponseDto> RefreshAccessTokenAsync(string refreshToken);
     }
 }

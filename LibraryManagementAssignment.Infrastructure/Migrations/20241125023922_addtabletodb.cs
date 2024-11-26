@@ -67,11 +67,12 @@ namespace LibraryManagementAssignment.Infrastructure.Migrations
                     Description = table.Column<string>(type: "text", nullable: true),
                     Language = table.Column<string>(type: "text", nullable: false),
                     Location = table.Column<string>(type: "text", nullable: false),
-                    PurchaseDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PurchaseDate = table.Column<DateOnly>(type: "date", nullable: false),
                     Price = table.Column<int>(type: "integer", nullable: false),
                     TotalBook = table.Column<int>(type: "integer", nullable: false),
-                    DeleteStatus = table.Column<string>(type: "text", nullable: false),
-                    DeleteStamp = table.Column<bool>(type: "boolean", nullable: false)
+                    DeleteStatus = table.Column<string>(type: "text", nullable: true),
+                    DeleteStamp = table.Column<bool>(type: "boolean", nullable: false),
+                    Subject = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -193,11 +194,11 @@ namespace LibraryManagementAssignment.Infrastructure.Migrations
                     FirstName = table.Column<string>(type: "text", nullable: false),
                     LastName = table.Column<string>(type: "text", nullable: false),
                     LibraryCardNumber = table.Column<int>(type: "integer", nullable: true),
-                    LibraryCardExpDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LibraryCardExpDate = table.Column<DateOnly>(type: "date", nullable: true),
                     Position = table.Column<string>(type: "text", nullable: false),
                     Previlege = table.Column<string>(type: "text", nullable: false),
                     Note = table.Column<string>(type: "text", nullable: true),
-                    AppUserId = table.Column<string>(type: "text", nullable: false)
+                    AppUserId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -206,6 +207,35 @@ namespace LibraryManagementAssignment.Infrastructure.Migrations
                         name: "FK_Users_AspNetUsers_AppUserId",
                         column: x => x.AppUserId,
                         principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "BookManagers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    BookId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    TanggalPinjam = table.Column<DateOnly>(type: "date", nullable: false),
+                    TanggalKembali = table.Column<DateOnly>(type: "date", nullable: false),
+                    DueDate = table.Column<DateOnly>(type: "date", nullable: true),
+                    Penalty = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_BookManagers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_BookManagers_Books_BookId",
+                        column: x => x.BookId,
+                        principalTable: "Books",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_BookManagers_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -248,6 +278,16 @@ namespace LibraryManagementAssignment.Infrastructure.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_BookManagers_BookId",
+                table: "BookManagers",
+                column: "BookId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_BookManagers_UserId",
+                table: "BookManagers",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_AppUserId",
                 table: "Users",
                 column: "AppUserId");
@@ -272,13 +312,16 @@ namespace LibraryManagementAssignment.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "BookManagers");
+
+            migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
                 name: "Books");
 
             migrationBuilder.DropTable(
                 name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

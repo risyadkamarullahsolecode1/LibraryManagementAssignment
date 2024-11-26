@@ -201,7 +201,6 @@ namespace LibraryManagementAssignment.Infrastructure.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("AppUserId")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("FirstName")
@@ -212,8 +211,8 @@ namespace LibraryManagementAssignment.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("LibraryCardExpDate")
-                        .HasColumnType("timestamp with time zone");
+                    b.Property<DateOnly?>("LibraryCardExpDate")
+                        .HasColumnType("date");
 
                     b.Property<int?>("LibraryCardNumber")
                         .HasColumnType("integer");
@@ -391,9 +390,7 @@ namespace LibraryManagementAssignment.Infrastructure.Migrations
                 {
                     b.HasOne("LibraryManagementAssignment.Domain.Entities.AppUser", "AppUser")
                         .WithMany("Users")
-                        .HasForeignKey("AppUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("AppUserId");
 
                     b.Navigation("AppUser");
                 });
