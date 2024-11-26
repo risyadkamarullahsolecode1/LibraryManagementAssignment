@@ -190,7 +190,8 @@ namespace LibraryManagementAssignment.Application.Services
                 b.Title.ToLower().Contains(query.Keyword.ToLower()) ||
                 b.Author.ToLower().Contains(query.Keyword.ToLower()) ||
                 b.ISBN.ToLower().Contains(query.Keyword.ToLower()) ||
-                b.Subject.ToLower().Contains(query.Keyword.ToLower())
+                b.Subject.ToLower().Contains(query.Keyword.ToLower()) ||
+                b.Category.ToLower().Contains(query.Keyword.ToLower())
                 );
             }
             if (!string.IsNullOrEmpty(query.Title))
@@ -201,6 +202,8 @@ namespace LibraryManagementAssignment.Application.Services
                 temp = temp.Where(b => b.ISBN.ToLower().Contains(query.ISBN.ToLower()));
             if (!string.IsNullOrEmpty(query.Subject))
                 temp = temp.Where(b => b.Subject.ToLower().Contains(query.Subject.ToLower()));
+            if (!string.IsNullOrEmpty(query.Category))
+                temp = temp.Where(b => b.Category.ToLower().Contains(query.Category.ToLower()));
             var total = temp.Count();
 
             if (!string.IsNullOrWhiteSpace(query.SortBy))
@@ -211,7 +214,6 @@ namespace LibraryManagementAssignment.Application.Services
                         temp = query.SortOrder.Equals("asc") ? temp.OrderBy(s => s.Author) :
                         temp.OrderByDescending(s => s.Author);
                         break;
-
                     case "isbn":
                         temp = query.SortOrder.Equals("asc") ? temp.OrderBy(s => s.ISBN) :
                         temp.OrderByDescending(s => s.ISBN);
@@ -220,7 +222,6 @@ namespace LibraryManagementAssignment.Application.Services
                         temp = query.SortOrder.Equals("asc") ? temp.OrderBy(s => s.Id) :
                         temp.OrderByDescending(s => s.Id);
                         break;
-
                     default:
                         temp = query.SortOrder.Equals("asc") ? temp.OrderBy(s => s.Title) :
                         temp.OrderByDescending(s => s.Title);
